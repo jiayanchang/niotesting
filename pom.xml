@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.jw</groupId>
+  <artifactId>niotesting</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>niotesting</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.apache.mina</groupId>
+  		<artifactId>mina-core</artifactId>
+  		<version>1.0.7</version>
+  	</dependency>
+  	<dependency>
+	    <groupId>io.netty</groupId>
+	    <artifactId>netty</artifactId> <!-- Use 'netty-all' for 4.0 or above -->
+	    <version>3.6.5.Final</version>
+	    <scope>compile</scope>
+	  </dependency>
+  </dependencies>
+</project>
