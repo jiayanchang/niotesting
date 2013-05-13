@@ -1,5 +1,6 @@
 package com.jw.nio.netty.updown.server;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -34,7 +35,7 @@ public class LoginHandler extends SimpleChannelUpstreamHandler {
 				print("登陆成功");
 				LoginOk loginOk = new LoginOk();
 				loginOk.setUsername(loginRequest.getUser().getUsername());
-				e.getChannel().write(loginOk);
+				e.getChannel().write(loginOk.encode());
 			} else {
 				print("登陆失败");
 				LoginFail fail = new LoginFail();
@@ -45,7 +46,7 @@ public class LoginHandler extends SimpleChannelUpstreamHandler {
 		} else {
 			print("非登陆");
 		}
-//		super.messageReceived(ctx, e);
+		super.messageReceived(ctx, e);
 	}
 
 	@Override
@@ -56,6 +57,6 @@ public class LoginHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	private void print(String msg) {
-		System.out.println(this.getClass().getName() + " : " + msg);
+		System.out.println(new Date() + " " + this.getClass().getName() + " : " + msg);
 	}
 }

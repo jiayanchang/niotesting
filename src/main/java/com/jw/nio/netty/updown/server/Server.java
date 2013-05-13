@@ -24,7 +24,7 @@ public class Server {
 				pipeline.addLast(Encoder.class.toString(), new Encoder());
 				pipeline.addLast(Decoder.class.toString(), new Decoder());
 				pipeline.addLast(LoginHandler.class.toString(), new LoginHandler());
-				pipeline.addLast(LoginSuccessHandler.class.toString(), new LoginSuccessHandler());
+				pipeline.addLast(LoginLogHandler.class.toString(), new LoginLogHandler());
 				return pipeline;
 			}
 		});

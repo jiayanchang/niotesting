@@ -1,5 +1,6 @@
 package com.jw.nio.netty.updown;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,12 +22,15 @@ public class Decoder extends FrameDecoder {
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel,
 			ChannelBuffer buffer) throws Exception {
+		print("decode");
 		int type = buffer.readByte();
 		Class<?> clz = types.get(type);
 		Object message = clz.newInstance();
 		clz.getMethod("decode", ChannelBuffer.class).invoke(message, buffer);
-		System.out.println("server decode");
 		return message;
 	}
-
+	
+	private void print(String msg) {
+		System.out.println(new Date() + " " + this.getClass().getName() + " : " + msg);
+	}
 }

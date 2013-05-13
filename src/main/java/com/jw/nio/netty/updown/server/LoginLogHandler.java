@@ -1,5 +1,7 @@
 package com.jw.nio.netty.updown.server;
 
+import java.util.Date;
+
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
@@ -17,10 +19,10 @@ public class LoginLogHandler extends SimpleChannelUpstreamHandler {
 		} else if(e.getMessage() instanceof LoginFail){
 			print("登陆失败");
 		}
-//		super.messageReceived(ctx, e);
+		ctx.sendUpstream(e);
 	}
 	
 	private void print(String msg) {
-		System.out.println(this.getClass().getName() + " : " + msg);
+		System.out.println(new Date() + " " + this.getClass().getName() + " : " + msg);
 	}
 }

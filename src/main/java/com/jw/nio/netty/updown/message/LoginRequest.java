@@ -30,9 +30,15 @@ public class LoginRequest extends AbstractMessage {
 
 	@Override
 	public ChannelBuffer encode() {
+		
+		System.out.println("login request encode");
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		buffer.writeByte(type);
-		buffer.writeBytes(toXml(getUser()).getBytes(Charset.defaultCharset()));
+		try {
+			buffer.writeByte(type);
+			buffer.writeBytes(toXml(getUser()).getBytes(Charset.defaultCharset()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return buffer;
 	}
 
