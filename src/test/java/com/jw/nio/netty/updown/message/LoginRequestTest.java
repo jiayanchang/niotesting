@@ -5,6 +5,9 @@ import junit.framework.Assert;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.junit.Test;
 
+import com.jw.nio.netty.login.message.LoginRequest;
+import com.jw.nio.netty.login.message.User;
+
 public class LoginRequestTest {
 
 	@Test
