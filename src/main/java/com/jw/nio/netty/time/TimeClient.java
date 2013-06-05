@@ -20,11 +20,9 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 public class TimeClient {
 
-	static InetSocketAddress server = new InetSocketAddress("localhost", 8000);
+	InetSocketAddress server;
+	Channel channel;
 	static ClientBootstrap client;
-	static Channel channel;
-	
-	private String msg;
 	
 	static {
 		client = new ClientBootstrap(new NioClientSocketChannelFactory());
@@ -36,36 +34,30 @@ public class TimeClient {
 				return pipeline;
 			}
 		});
+	}
+	
+	public TimeClient(InetSocketAddress address) {
+		server = address;
+	}
+	
+	public void connect(){
 		ChannelFuture future = client.connect(server);
 		future.awaitUninterruptibly();
 		channel = future.getChannel();
 	}
 	
-	public static TimeClient getInstance() {
-		TimeClient client = new TimeClient();
-		return client;
-	}
-	
-	public String req(){
+	public String request(){
 		String msg = "1";
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(msg.length());
 		buffer.writeBytes(msg.getBytes());
-		ChannelFuture future = channel.write(buffer);
-		future.addListener(new ChannelFutureListener() {
-			
-			@Override
-			public void operationComplete(ChannelFuture future) throws Exception {
-				// TODO Auto-generated method stub
-				this.notify();
-			}
-		});
-		try {
-			this.wait();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("req over");
-		return (String) future.getChannel().getAttachment();
+		TimeContext timeContext = new TimeContext();
+		channel.setAttachment(timeContext);
+		channel.write(buffer);
+		return timeContext.await(5).toString();
+	}
+	
+	public void close(){
+		channel.close();
 	}
 	
 	private static class ReceivableHandler extends SimpleChannelHandler {
@@ -75,8 +67,9 @@ public class TimeClient {
 				throws Exception {
 			ChannelBuffer buffer = (ChannelBuffer) e.getMessage();
 			String msg = buffer.toString(Charset.defaultCharset());
-			System.out.println("ReceivableHandler.setAttachment(" + msg + ")");
-			ctx.getChannel().setAttachment(msg);
+			TimeContext timeContext = (TimeContext) ctx.getChannel().getAttachment();
+//			System.out.println("ReceivableHandler.setAttachment(" + msg + ")");
+			timeContext.setReply(msg);
 			super.messageReceived(ctx, e);
 		}
 		

@@ -53,25 +53,11 @@ public class TimeServer {
 	private static class TimeHandler extends SimpleChannelHandler {
 		
 		@Override
-		public void channelConnected(ChannelHandlerContext ctx,
-				ChannelStateEvent e) throws Exception {
-			System.out.println("channelConnected");
-			super.channelConnected(ctx, e);
-		}
-		
-		@Override
-		public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
-				throws Exception {
-			System.out.println("channelClosed");			
-			super.channelClosed(ctx, e);
-		}
-		
-		@Override
 		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 				throws Exception {
 			String req = ((ChannelBuffer)e.getMessage()).toString(Charset.defaultCharset());
 			if(req.equals("1")) {
-				String msg = "" + System.currentTimeMillis();
+				String msg = "" + Math.random();
 				ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(msg.length());
 				buffer.writeBytes(msg.getBytes());
 				e.getChannel().write(buffer);
