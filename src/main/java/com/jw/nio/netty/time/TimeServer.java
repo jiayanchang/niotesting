@@ -1,6 +1,7 @@
 package com.jw.nio.netty.time;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -11,6 +12,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
@@ -35,8 +37,7 @@ public class TimeServer {
 		}
 	};
 
-	private static void initServer(NioServerSocketChannelFactory channelFactory,
-			ChannelPipelineFactory channelPipelineFactory) {
+	static {
 		server = new ServerBootstrap(channelFactory);
 		server.setOption("backlog", 1000);
 		server.setOption("reuseAddress", true);
@@ -45,22 +46,39 @@ public class TimeServer {
 	}
 	
 	public static void main(String[] args) {
-		initServer(channelFactory, channelPipelineFactory);
 		server.bind(address);
+		System.out.println("server is startup");
 	}
 	
-	public static class TimeHandler extends SimpleChannelHandler {
+	private static class TimeHandler extends SimpleChannelHandler {
 		
 		@Override
 		public void channelConnected(ChannelHandlerContext ctx,
 				ChannelStateEvent e) throws Exception {
-			String msg = "think";
-			ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(msg.length());
-			buffer.writeBytes(msg.getBytes());
-			e.getChannel().write(buffer);
+			System.out.println("channelConnected");
 			super.channelConnected(ctx, e);
 		}
 		
+		@Override
+		public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
+				throws Exception {
+			System.out.println("channelClosed");			
+			super.channelClosed(ctx, e);
+		}
+		
+		@Override
+		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
+				throws Exception {
+			String req = ((ChannelBuffer)e.getMessage()).toString(Charset.defaultCharset());
+			if(req.equals("1")) {
+				String msg = "" + System.currentTimeMillis();
+				ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(msg.length());
+				buffer.writeBytes(msg.getBytes());
+				e.getChannel().write(buffer);
+				System.out.println("write over");
+			}
+			super.messageReceived(ctx, e);
+		}
 	}
 
 }
