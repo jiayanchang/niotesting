@@ -10,7 +10,6 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
@@ -56,13 +55,14 @@ public class TimeServer {
 		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 				throws Exception {
 			String req = ((ChannelBuffer)e.getMessage()).toString(Charset.defaultCharset());
-			if(req.equals("1")) {
-				String msg = "" + Math.random();
+//			if(req.equals("1")) {
+//				String msg = "" + Math.random();
+				String msg = req;
 				ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(msg.length());
 				buffer.writeBytes(msg.getBytes());
 				e.getChannel().write(buffer);
 				System.out.println("write over");
-			}
+//			}
 			super.messageReceived(ctx, e);
 		}
 	}

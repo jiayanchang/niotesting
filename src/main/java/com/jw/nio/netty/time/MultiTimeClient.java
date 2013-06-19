@@ -5,10 +5,8 @@ import java.nio.charset.Charset;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -18,9 +16,15 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
-public class TimeClient {
+public class MultiTimeClient implements Runnable {
 
-	InetSocketAddress server;
+	public MultiTimeClient(String flag){
+		this.flag = flag;
+	}
+	
+	String flag;
+	
+	static InetSocketAddress server;
 	static Channel channel;
 	static ClientBootstrap client;
 	
@@ -36,19 +40,27 @@ public class TimeClient {
 		});
 	}
 	
-	public TimeClient(InetSocketAddress address) {
-		server = address;
+	public static void init(InetSocketAddress server){
+		MultiTimeClient.server = server;
+		connect();
 	}
 	
-	public void connect(){
+	private static void connect(){
 		ChannelFuture future = client.connect(server);
 		future.awaitUninterruptibly();
 		channel = future.getChannel();
 	}
 	
-	public void close(){
+	public static void close(){
 		channel.close();
 	}
+	
+	@Override
+	public void run() {
+		TimeContext context = new TimeContext(channel);
+		System.out.println(this.flag + " : " + context.request(flag));
+	}
+
 	
 	private static class ReceivableHandler extends SimpleChannelHandler {
 		
@@ -69,4 +81,5 @@ public class TimeClient {
 			super.exceptionCaught(ctx, e);
 		}
 	}
+
 }

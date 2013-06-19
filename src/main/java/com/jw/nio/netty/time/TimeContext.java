@@ -4,17 +4,31 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
+
 public class TimeContext {
 
-	public TimeContext() {
+	public TimeContext(Channel channel) {
+		this.channel = channel;
+		this.channel.setAttachment(this);
 		lock = new ReentrantLock();
 		condition = lock.newCondition();
 	}
 	
+	final Channel channel;
 	final ReentrantLock lock;
 	final Condition condition;
 	
 	private Object msg;
+	
+	public String request(String msg){
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(msg.length());
+		buffer.writeBytes(msg.getBytes());
+		channel.write(buffer);
+		return await(2).toString();
+	}
 	
 	public Object await(int timeOut){
 		lock.lock();
@@ -44,8 +58,4 @@ public class TimeContext {
 		}
 	}
 	
-	public static void main(String[] args) {
-		TimeContext context = new TimeContext();
-		context.await(20);
-	}
 }
